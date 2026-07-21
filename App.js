@@ -14,6 +14,7 @@ import DetailScreen from './src/screens/DetailScreen'
 import { useEffect } from 'react'
 import { requestLocationPermission } from './src/services/locationService'
 import ProfileScreen from './src/screens/ProfileScreen'
+import LoadingScreen from './src/screens/LoadingScreen'
 
 const Stack = createStackNavigator()
 
@@ -35,6 +36,7 @@ export default function App() {
           <Stack.Screen name="Result" component={ResultScreen} />
           <Stack.Screen name="Detail" component={DetailScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Loading" component={LoadingScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

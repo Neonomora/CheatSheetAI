@@ -22,8 +22,20 @@ export function AuthProvider({ children }) {
           const freshUser = auth.currentUser;
 
           if (freshUser?.emailVerified) {
-            const userDoc = await getDoc(doc(db, "users", freshUser.uid));
-            if (userDoc.exists()) {
+            let userDoc = null;
+            let retries = 0;
+
+            while (retries < 3) {
+              const snap = await getDoc(doc(db, "users", freshUser.uid));
+              if (snap.exists()) {
+                userDoc = snap;
+                break;
+              }
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+              retries++;
+            }
+
+            if (userDoc) {
               setRole(userDoc.data()?.role || "user");
               setUser(freshUser);
             } else {
@@ -35,8 +47,11 @@ export function AuthProvider({ children }) {
             setRole(null);
           }
         } else {
-          setUser(null);
-          setRole(null);
+          // Ignore trigger null sementara setelah login
+          if (!isLoggedIn.current) {
+            setUser(null);
+            setRole(null);
+          }
         }
       } catch (error) {
         console.error("Auth error:", error);
