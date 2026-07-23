@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { getRecommendation } from "../services/groqService";
+import { searchMenus } from "../services/menuService";
 
 export default function ResultScreen({ route, navigation }) {
   const { category, filters, search } = route.params;
@@ -19,8 +20,22 @@ export default function ResultScreen({ route, navigation }) {
     try {
       setLoading(true);
       setError(null);
-      const data = await getRecommendation({ category, filters, search });
-      setResults(data);
+
+      // Cari dari database dulu
+      const dbResults = await searchMenus({ category, filters, search });
+
+      if (dbResults.length > 0) {
+        // Ada hasil dari database → tampilkan
+        setResults(dbResults);
+      } else {
+        // Tidak ada → fallback ke Groq AI
+        const aiResults = await getRecommendation({
+          category,
+          filters,
+          search,
+        });
+        setResults(aiResults);
+      }
     } catch (err) {
       setError("Gagal mendapatkan rekomendasi. Coba lagi!");
     } finally {
@@ -97,9 +112,21 @@ export default function ResultScreen({ route, navigation }) {
                 onPress={() => navigation.navigate("Detail", { item })}
               >
                 {/* Nama */}
-                <Text className="text-base font-bold text-gray-800 mb-1">
-                  {item.name}
-                </Text>
+                {/* Nama + Badge */}
+                <View className="flex-row items-center justify-between mb-1">
+                  <Text className="text-base font-bold text-gray-800 flex-1 mr-2">
+                    {item.name}
+                  </Text>
+                  <View
+                    className={`px-2 py-1 rounded-lg ${item.source === "database" ? "bg-green-50" : "bg-blue-50"}`}
+                  >
+                    <Text
+                      className={`text-xs font-semibold ${item.source === "database" ? "text-green-500" : "text-blue-500"}`}
+                    >
+                      {item.source === "database" ? "🏪 Toko" : "🤖 AI"}
+                    </Text>
+                  </View>
+                </View>
 
                 {/* Deskripsi */}
                 <Text className="text-sm text-gray-400 mb-3" numberOfLines={2}>

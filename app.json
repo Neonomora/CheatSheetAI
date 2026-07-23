@@ -1,21 +1,34 @@
 {
   "expo": {
     "name": "CheatSheetAI",
-    "slug": "CheatSheetAI",
+    "slug": "cheatsheetai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {},
-    "ios": {
-      "supportsTablet": true
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
     },
     "android": {
-      "adaptiveIcon": {},
-      "edgeToEdgeEnabled": true
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.cheatsheetai",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     },
-    "web": {},
-    "plugins": ["expo-font"]
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Aplikasi membutuhkan akses lokasi untuk memberikan rekomendasi terdekat."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9b14a956-fcb7-48d9-9777-155c258f4527"
+      }
+    }
   }
 }

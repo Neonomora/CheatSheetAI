@@ -5,10 +5,14 @@ export const getRecommendation = async ({ category, filters, search }) => {
     // Susun prompt berdasarkan input user
     const categoryLabel = category === "food" ? "makanan" : "minuman";
     const filterLabels = filters.map((f) => f.label).join(", ");
+    // Tambah random seed di prompt
+    const randomSeed = Math.floor(Math.random() * 1000);
 
     const prompt = search
-      ? `Rekomendasikan ${categoryLabel} Indonesia dengan nama "${search}". Berikan 5 rekomendasi.`
-      : `Rekomendasikan 5 ${categoryLabel} Indonesia berdasarkan selera: ${filterLabels}.`;
+      ? `Rekomendasikan ${categoryLabel} Indonesia dengan nama "${search}". 
+     Berikan 5 rekomendasi yang berbeda-beda (seed: ${randomSeed}).`
+      : `Rekomendasikan 5 ${categoryLabel} Indonesia berdasarkan selera: ${filterLabels}. 
+     Berikan rekomendasi yang bervariasi dan berbeda dari sebelumnya (seed: ${randomSeed}).`;
 
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
@@ -19,7 +23,7 @@ export const getRecommendation = async ({ category, filters, search }) => {
           Authorization: `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'openai/gpt-oss-20b',
+          model: "openai/gpt-oss-20b",
           messages: [
             {
               role: "system",

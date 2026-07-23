@@ -89,21 +89,13 @@ export default function LoginScreen({ navigation }) {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const role = userDoc.data()?.role;
 
-      if (role === "admin") {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "AdminDashboard" }],
-          }),
-        );
-      } else {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "Loading" }],
-          }),
-        );
-      }
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "Loading" }],
+        }),
+      );
+      
     } catch (error) {
       if (
         error.code === "auth/user-not-found" ||

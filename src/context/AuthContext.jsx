@@ -36,7 +36,8 @@ export function AuthProvider({ children }) {
             }
 
             if (userDoc) {
-              setRole(userDoc.data()?.role || "user");
+              const role = userDoc.data()?.role || "user";
+              setRole(role);
               setUser(freshUser);
             } else {
               setUser(null);

@@ -7,13 +7,15 @@ export default function LoadingGuard({ navigation }) {
   useEffect(() => {
     if (loading) return
 
-    if (!user) {
-      navigation.replace('Onboarding')
-    } else if (role === 'admin') {
-      navigation.replace('AdminDashboard')
-    } else {
-      navigation.replace('Home')
-    }
+if (!user) {
+  navigation.replace('Onboarding')
+} else if (role === 'superadmin') {
+  navigation.replace('SuperAdminDashboard')
+} else if (role === 'admin') {
+  navigation.replace('AdminDashboard')
+} else {
+  navigation.replace('Home')
+}
   }, [user, role, loading])
 
   return null

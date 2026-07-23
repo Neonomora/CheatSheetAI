@@ -1,13 +1,20 @@
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
-import { deleteUser } from "firebase/auth";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db, auth } from "../services/firebase";
 import { CommonActions } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
+import {
+  deleteUser,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
+import PasswordPromptModal from "../components/PasswordPromptModal";
 
 export default function ProfileScreen({ navigation }) {
+  const [modalVisible, setModalVisible] = useState(false);
   const { user, logout } = useAuth();
 
   // Ambil inisial dari username
@@ -48,38 +55,44 @@ export default function ProfileScreen({ navigation }) {
         {
           text: "Hapus",
           style: "destructive",
-          onPress: async () => {
-            try {
-              // 1. Hapus Firestore
-              await deleteDoc(doc(db, "users", user.uid));
-
-              // 2. Clear AsyncStorage — hapus cache auth
-              await AsyncStorage.clear();
-
-              // 3. Hapus Auth
-              await deleteUser(auth.currentUser);
-
-              // 4. Reset navigasi
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [{ name: "Onboarding" }],
-                }),
-              );
-            } catch (error) {
-              if (error.code === "auth/requires-recent-login") {
-                Alert.alert(
-                  "Sesi Kadaluarsa",
-                  "Silakan logout dan login ulang sebelum menghapus akun.",
-                );
-              } else {
-                Alert.alert("Error", "Gagal hapus akun, coba lagi!");
-              }
-            }
-          },
+          onPress: () => setModalVisible(true),
         },
       ],
     );
+  };
+
+  const handleConfirmDelete = async (password) => {
+    try {
+      setModalVisible(false);
+
+      // Reauth dulu
+      const credential = EmailAuthProvider.credential(user.email, password);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+
+      // Hapus Firestore
+      await deleteDoc(doc(db, "users", user.uid));
+
+      // Hapus Auth
+      await deleteUser(auth.currentUser);
+
+      // Reset navigasi
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "Onboarding" }],
+        }),
+      );
+    } catch (error) {
+      if (
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/invalid-credential"
+      ) {
+        Alert.alert("Error", "Password salah!");
+      } else {
+        Alert.alert("Error", "Gagal hapus akun, coba lagi!");
+        console.error(error);
+      }
+    }
   };
 
   return (
@@ -147,6 +160,11 @@ export default function ProfileScreen({ navigation }) {
           <Ionicons name="chevron-forward" size={16} color="#BBBBBB" />
         </TouchableOpacity>
       </View>
+      <PasswordPromptModal
+        visible={modalVisible}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setModalVisible(false)}
+      />
     </View>
   );
 }

@@ -1,21 +1,8 @@
 import { View, Text, ActivityIndicator } from 'react-native'
-import { useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
+import useRedirect from '../hooks/useRedirect'
 
 export default function LoadingScreen({ navigation }) {
-  const { user, role, loading } = useAuth()
-
-  useEffect(() => {
-    if (loading) return
-
-    if (!user) {
-      navigation.replace('Onboarding')
-    } else if (role === 'admin') {
-      navigation.replace('AdminDashboard')
-    } else {
-      navigation.replace('Home')
-    }
-  }, [user, role, loading])
+  useRedirect(navigation)
 
   return (
     <View className="flex-1 bg-white items-center justify-center">

@@ -97,6 +97,7 @@ export default function HomeScreen({ navigation }) {
     <View className="flex-1 bg-white">
       {/* Header */}
       {/* Header */}
+      {/* Header */}
       <View className="px-6 pt-14 pb-4 flex-row items-center justify-between">
         <View>
           <Text className="text-sm text-gray-400">Halo, 👋</Text>
@@ -108,21 +109,24 @@ export default function HomeScreen({ navigation }) {
           </Text>
         </View>
 
-        {/* Tombol Logout */}
-        {/* <TouchableOpacity
-          className="bg-gray-100 p-2 rounded-xl"
-          onPress={handleLogout}
-        >
-          <Ionicons name="log-out-outline" size={22} color="#888888" />
-        </TouchableOpacity> */}
+        {/* Tombol kanan */}
+        <View className="flex-row items-center">
+          {/* Tombol Location */}
+          <TouchableOpacity
+            className="bg-gray-100 p-2 rounded-xl mr-2"
+            onPress={() => navigation.navigate("Location")}
+          >
+            <Ionicons name="map-outline" size={22} color="#888888" />
+          </TouchableOpacity>
 
-        {/* Tombol Profile */}
-        <TouchableOpacity
-          className="bg-gray-100 p-2 rounded-xl"
-          onPress={() => navigation.navigate("Profile")}
-        >
-          <Ionicons name="person-outline" size={22} color="#888888" />
-        </TouchableOpacity>
+          {/* Tombol Profile */}
+          <TouchableOpacity
+            className="bg-gray-100 p-2 rounded-xl"
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <Ionicons name="person-outline" size={22} color="#888888" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Tab Kategori */}
